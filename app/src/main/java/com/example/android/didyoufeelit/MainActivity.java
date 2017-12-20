@@ -15,8 +15,10 @@
  */
 package com.example.android.didyoufeelit;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
 
 /**
@@ -25,7 +27,9 @@ import android.widget.TextView;
  */
 public class MainActivity extends AppCompatActivity {
 
-    /** URL for earthquake data from the USGS dataset */
+    /**
+     * URL for earthquake data from the USGS dataset
+     */
     private static final String USGS_REQUEST_URL =
             "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2016-01-01&endtime=2016-05-02&minfelt=50&minmagnitude=5";
 
@@ -35,10 +39,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Perform the HTTP request for earthquake data and process the response.
-        Event earthquake = Utils.fetchEarthquakeData(USGS_REQUEST_URL);
+//        Event earthquake = Utils.fetchEarthquakeData(USGS_REQUEST_URL);
+        FetchEarthquake fetchEarthquake = new FetchEarthquake();
+        fetchEarthquake.execute(USGS_REQUEST_URL);
 
         // Update the information displayed to the user.
-        updateUi(earthquake);
+//        updateUi(earthquake);
     }
 
     /**
@@ -53,5 +59,45 @@ public class MainActivity extends AppCompatActivity {
 
         TextView magnitudeTextView = (TextView) findViewById(R.id.perceived_magnitude);
         magnitudeTextView.setText(earthquake.perceivedStrength);
+    }
+
+    private class FetchEarthquake extends AsyncTask<String, Void, Event> {
+
+        @Override
+        protected Event doInBackground(String... urls) {
+            // Perform the HTTP request for earthquake data and process the response.
+            return Utils.fetchEarthquakeData(urls[0]);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            updateUIFromBackground("Starting download...");
+        }
+
+        @Override
+        protected void onPostExecute(Event event) {
+            super.onPostExecute(event);
+            updateUi(event);
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        private void updateUIFromBackground(String msg) {
+            TextView titleTextView = (TextView) findViewById(R.id.title);
+
+            StringBuilder builder = new StringBuilder();
+            builder
+                    .append("")
+                    .append(titleTextView.getText())
+                    .append("\n")
+                    .append(msg);
+
+            Log.v("Second thread: ",builder.toString());
+            titleTextView.setText(builder.toString());
+        }
     }
 }
