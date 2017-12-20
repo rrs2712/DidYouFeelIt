@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Perform the HTTP request for earthquake data and process the response.
 //        Event earthquake = Utils.fetchEarthquakeData(USGS_REQUEST_URL);
-        FetchEarthquake fetchEarthquake = new FetchEarthquake();
-        fetchEarthquake.execute(USGS_REQUEST_URL);
+        EarthquakeAsyncTask earthquakeAsyncTask = new EarthquakeAsyncTask();
+        earthquakeAsyncTask.execute(USGS_REQUEST_URL);
 
         // Update the information displayed to the user.
 //        updateUi(earthquake);
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         magnitudeTextView.setText(earthquake.perceivedStrength);
     }
 
-    private class FetchEarthquake extends AsyncTask<String, Void, Event> {
+    private class EarthquakeAsyncTask extends AsyncTask<String, Void, Event> {
 
         @Override
         protected Event doInBackground(String... urls) {
