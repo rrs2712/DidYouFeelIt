@@ -65,6 +65,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Event doInBackground(String... urls) {
+            if(urls.equals(null) || urls.length<1){
+                return null;
+            }
+
             // Perform the HTTP request for earthquake data and process the response.
             return Utils.fetchEarthquakeData(urls[0]);
         }
@@ -78,6 +82,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Event event) {
             super.onPostExecute(event);
+
+            if(event.equals(null)){
+                return;
+            }
+
             updateUi(event);
         }
 
